@@ -1,0 +1,5 @@
+streamlit
+python-dotenv
+oauth2client
+pandas
+numpy
