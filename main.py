@@ -92,47 +92,46 @@ if page == "Quiz":
         return option_map.get(correct_answer.strip(), -1)
 
     # Display Questions in Styled Format
-    for index, row in filtered_data.iterrows():
-        st.markdown(f"""
-        <div style="padding: 10px; border-radius: 10px; background-color: black;">
-            <h4 style="color: white;">📘 {row['Topic']} Question {index + 1}:</h4>
-            <p style="color: white;"><b>{row['Question']}</b></p>
-        </div>
-        """, unsafe_allow_html=True)
+for index, row in filtered_data.iterrows():
+    st.markdown(f"""
+    <div style="padding: 10px; border-radius: 10px; background-color: black;">
+        <h4 style="color: white;">📘 {row['Topic']} Question {index + 1}:</h4>
+        <p style="color: white;"><b>{row['Question']}</b></p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        # Split and display options
-        options = row['Options'].split(";")
-        option_labels = ["A", "B", "C", "D"]
+    # Split and display options
+    options = row['Options'].split(";")
+    option_labels = ["A", "B", "C", "D"]
 
-        for i, option in enumerate(options):
-            st.markdown(f"""
-            <div style="
-                border: 1px solid #e0e0e0;
-                padding: 10px;
-                border-radius: 8px;
-                margin-bottom: 8px;
-                background-color: black;
-                color: white;">
-            {option_labels[i]}. {option.strip()}
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Find correct option index
-        correct_index = get_correct_option_index(row['Correct Answer'])
-
-        # Answer section
+    for i, option in enumerate(options):
         st.markdown(f"""
         <div style="
-            margin-top: 20px;
+            border: 1px solid #e0e0e0;
             padding: 10px;
-            background-color: #d1e7dd;
             border-radius: 8px;
-            color: black;">
-            ✅ <b>Answer:</b> {option_labels[correct_index]}. {options[correct_index].strip()}
+            margin-bottom: 8px;
+            background-color: black;
+            color: white;">
+        {option_labels[i]}. {option.strip()}
         </div>
-        <hr>
         """, unsafe_allow_html=True)
 
+    # Find correct option index
+    correct_index = get_correct_option_index(row['Correct Answer'])
+
+    # Answer section
+    st.markdown(f"""
+    <div style="
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #d1e7dd;
+        border-radius: 8px;
+        color: black;">
+        ✅ <b>Answer:</b> {option_labels[correct_index]}. {options[correct_index].strip()}
+    </div>
+    <hr>
+    """, unsafe_allow_html=True)
 # Topic Stats Page
 if page == "Topic Stats":
     # Calculate the number of questions for each topic
