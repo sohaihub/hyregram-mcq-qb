@@ -54,7 +54,7 @@ tiYUBwODxZRuycZYl3eOICdP
     spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0/edit?gid=0")
     worksheet = spreadsheet.get_worksheet(0)
     data = pd.DataFrame(worksheet.get_all_records())
-    st.success("✅ Successfully connected to Google Sheets!")
+    
 except Exception as e:
     st.error(f"❌ Error connecting to Google Sheets: {str(e)}")
     st.stop()
