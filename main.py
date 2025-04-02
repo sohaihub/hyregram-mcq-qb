@@ -6,9 +6,7 @@ import os
 
 # Google Sheets Authentication
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), scope
-)
+creds = ServiceAccountCredentials.from_json_keyfile_name(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), scope)
 client = gspread.authorize(creds)
 
 # Load data from Google Sheets
