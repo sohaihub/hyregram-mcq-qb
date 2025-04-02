@@ -65,6 +65,38 @@ def get_correct_option_index(correct_answer):
     return option_map.get(correct_answer.strip().upper(), -1)
 
 page = st.sidebar.selectbox("📑 Select a Page", ["Quiz", "Topic Stats"])
+if page == "Topic Stats":
+    # Normalize topic names to handle duplicates (e.g., "Vocabulary" and "vocabulary")
+    data['Topic'] = data['Topic'].str.strip().str.title()
+
+    # Group by topic and difficulty, counting the number of questions in each category
+    topic_stats = (
+        data.groupby(['Topic', 'Difficulty'])
+        .agg(total_questions=('Question', 'count'))
+        .unstack(fill_value=0)
+        .reset_index()
+    )
+
+    # Replace missing difficulty columns with zeros
+    difficulty_columns = ['Easy', 'Medium', 'Hard']
+    for col in difficulty_columns:
+        if col not in topic_stats.columns:
+            topic_stats[col] = 0
+
+    # Add a 'Total' column for each topic (sum of Easy, Medium, Hard)
+    topic_stats['Total'] = topic_stats.sum(axis=1)
+
+    # Calculate the overall total questions
+    overall_total = topic_stats['Total'].sum()
+
+    # Reorder columns to have Topic, Easy, Medium, Hard, Total
+    topic_stats = topic_stats[['Topic'] + difficulty_columns + ['Total']]
+
+    st.subheader("📊 Topic Statistics")
+    st.dataframe(topic_stats)
+
+    # Display overall total questions at the bottom
+    st.markdown(f"### 🏆 Overall Total Questions: {overall_total}")
 
 if page == "Quiz":
     topics = data['Topic'].unique()
