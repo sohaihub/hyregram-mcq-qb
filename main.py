@@ -10,8 +10,6 @@ st.title("📚 MCQ Question Bank")
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 try:
-    try:
-    # Direct credentials
     creds = {
         "type": "service_account",
         "project_id": "gen-lang-client-0825677129",
