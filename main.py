@@ -3,6 +3,8 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+st.set_page_config(page_title="📚 MCQ Quiz", layout="wide")
+st.title("📚 MCQ Question Bank")
 # Google Sheets Authentication using Service Account
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
@@ -61,8 +63,7 @@ except Exception as e:
     st.stop()
 
 # Page Configuration
-st.set_page_config(page_title="📚 MCQ Quiz", layout="wide")
-st.title("📚 MCQ Question Bank")
+
 
 # Sidebar: Page Selection
 page = st.sidebar.selectbox("📑 Select a Page", ["Quiz", "Topic Stats"])
