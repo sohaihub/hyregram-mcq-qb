@@ -5,10 +5,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(page_title="📚 MCQ Quiz", layout="wide")
 st.title("📚 MCQ Question Bank")
+
 # Google Sheets Authentication using Service Account
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 try:
+    try:
     # Direct credentials
     creds = {
         "type": "service_account",
@@ -50,17 +52,19 @@ tiYUBwODxZRuycZYl3eOICdP
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/data-774%40gen-lang-client-0825677129.iam.gserviceaccount.com",
         "universe_domain": "googleapis.com"
     }
-
     client = gspread.service_account_from_dict(creds)
-    spreadsheet = client.open_by_url(
-        "https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0/edit?gid=0"
-    )
+    spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0/edit?gid=0")
     worksheet = spreadsheet.get_worksheet(0)
     data = pd.DataFrame(worksheet.get_all_records())
     st.success("✅ Successfully connected to Google Sheets!")
 except Exception as e:
     st.error(f"❌ Error connecting to Google Sheets: {str(e)}")
     st.stop()
+
+# Function to map correct answers (A, B, C, D) to indexes (0, 1, 2, 3)
+def get_correct_option_index(correct_answer):
+    option_map = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    return option_map.get(correct_answer.strip().upper(), -1)
 
 page = st.sidebar.selectbox("📑 Select a Page", ["Quiz", "Topic Stats"])
 
@@ -79,7 +83,25 @@ if page == "Quiz":
         options = row['Options'].split(";")
         for i, option in enumerate(options):
             st.markdown(f"- {option.strip()}")
-        st.markdown(f"**Answer:** {options[get_correct_option_index(row['Correct Answer'])].strip()}")
+
+        # Find correct option index
+        correct_index = get_correct_option_index(row['Correct Answer'])
+
+        # Check if correct_index is valid
+        if correct_index >= 0 and correct_index < len(options):
+            st.markdown(f"""
+            <div style="
+                margin-top: 20px;
+                padding: 10px;
+                background-color: #d1e7dd;
+                border-radius: 8px;
+                color: black;">
+                ✅ <b>Answer:</b> {options[correct_index].strip()}
+            </div>
+            <hr>
+            """, unsafe_allow_html=True)
+        else:
+            st.error("❌ Error: Invalid correct answer index.")
 
 if page == "Topic Stats":
     topic_stats = data.groupby('Topic').agg(total_questions=('Question', 'count')).reset_index()
