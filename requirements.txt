@@ -3,3 +3,4 @@ python-dotenv
 oauth2client
 pandas
 numpy
+gspread
