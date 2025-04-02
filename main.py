@@ -102,21 +102,35 @@ for index, row in filtered_data.iterrows():
 
     # Split and display options
     options = row['Options'].split(";")
-    option_labels = ["A", "B", "C", "D"]
 
-    for i, option in enumerate(options):
-        st.markdown(f"""
-        <div style="
-            border: 1px solid #e0e0e0;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background-color: black;
-            color: white;">
-        {option_labels[i]}. {option.strip()}
-        </div>
-        """, unsafe_allow_html=True)
+for i, option in enumerate(options):
+    st.markdown(f"""
+    <div style="
+        border: 1px solid #e0e0e0;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        background-color: black;
+        color: white;">
+    {option.strip()}
+    </div>
+    """, unsafe_allow_html=True)
 
+# Find correct option index
+correct_index = get_correct_option_index(row['Correct Answer'])
+
+# Answer section
+st.markdown(f"""
+<div style="
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #d1e7dd;
+    border-radius: 8px;
+    color: black;">
+    ✅ <b>Answer:</b> {options[correct_index].strip()}
+</div>
+<hr>
+""", unsafe_allow_html=True)
     # Find correct option index
     correct_index = get_correct_option_index(row['Correct Answer'])
 
