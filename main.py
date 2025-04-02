@@ -6,13 +6,21 @@ import os
 
 # Google Sheets Authentication
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), scope)
-client = gspread.authorize(creds)
 
-# Load data from Google Sheets
-spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0/edit?gid=0")
-worksheet = spreadsheet.get_worksheet(0)
-data = pd.DataFrame(worksheet.get_all_records())
+try:
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), scope
+    )
+    client = gspread.authorize(creds)
+    spreadsheet = client.open_by_url(
+        "https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0/edit?gid=0"
+    )
+    worksheet = spreadsheet.get_worksheet(0)
+    data = pd.DataFrame(worksheet.get_all_records())
+    st.success("✅ Successfully connected to Google Sheets!")
+except Exception as e:
+    st.error(f"❌ Error connecting to Google Sheets: {str(e)}")
+    st.stop()
 
 # Page Configuration
 st.set_page_config(page_title="📚 MCQ Quiz", layout="wide")
