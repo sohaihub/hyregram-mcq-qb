@@ -1,9 +1,71 @@
 import streamlit as st
 import pandas as pd
 import gspread
+import random
+import plotly.express as px
+import plotly.graph_objects as go
 from oauth2client.service_account import ServiceAccountCredentials
 
-st.set_page_config(page_title="📚 MCQ Quiz", layout="wide")
+# Set page config with dark theme
+st.set_page_config(page_title="📚 MCQ Quiz", layout="wide", initial_sidebar_state="expanded")
+
+# Apply dark theme with CSS
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #0E1117;
+        color: #FAFAFA;
+    }
+    .stButton button {
+        background-color: #4B5DFF;
+        color: white;
+    }
+    .stDataFrame {
+        background-color: #262730;
+    }
+    .css-1d391kg {
+        background-color: #262730;
+    }
+    div[data-testid="stSidebarNav"] {
+        background-color: #1E1E1E;
+    }
+    .explanation-box {
+        background-color: #1E2730;
+        border-left: 3px solid #4B5DFF;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    .answer-box {
+        background-color: #2D3748;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border-left: 3px solid #38A169;
+    }
+    hr {
+        margin: 25px 0;
+        border-color: #4A5568;
+    }
+    .metric-card {
+        background-color: #1E2730;
+        border-radius: 5px;
+        padding: 15px;
+        text-align: center;
+        margin: 10px 0;
+    }
+    .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4B5DFF;
+    }
+    .metric-label {
+        font-size: 14px;
+        color: #A0AEC0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 st.title("📚 MCQ Question Bank")
 
 # Google Sheets Authentication using Service Account
@@ -64,76 +126,280 @@ def get_correct_option_index(correct_answer):
     option_map = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
     return option_map.get(correct_answer.strip().upper(), -1)
 
-page = st.sidebar.selectbox("📑 Select a Page", ["Quiz", "Topic Stats"])
+# Normalize topic names and difficulty to handle duplicates
+data['Topic'] = data['Topic'].str.strip().str.title()
+data['Difficulty'] = data['Difficulty'].str.strip().str.title()
+
+# Check if 'Domain' column exists, if not, create it based on Topic
+if 'Domain' not in data.columns:
+    # This is a placeholder. You might want to create a mapping of topics to domains
+    # For now, we'll just use Topic as Domain
+    data['Domain'] = data['Topic'].apply(lambda x: x.split()[0] if ' ' in x else x)
+
+# Category classification - add a Category column if not present
+if 'Category' not in data.columns:
+    # This is a placeholder. You might want to create a mapping of topics to categories
+    # For now, we'll derive it from the first part of the domain
+    data['Category'] = data['Domain'].apply(lambda x: x.split()[0] if ' ' in x else x)
+
+# Page selection
+page = st.sidebar.selectbox("📑 Select a Page", ["Questions", "Topic Stats"])
+
 if page == "Topic Stats":
-    # Normalize topic names to handle duplicates (e.g., "Vocabulary" and "vocabulary")
-    data['Topic'] = data['Topic'].str.strip().str.title()
-
-    # Group by topic and difficulty, counting the number of questions in each category
-    topic_stats = (
-        data.groupby(['Topic', 'Difficulty'])
-        .agg(total_questions=('Question', 'count'))
-        .unstack(fill_value=0)
-        .reset_index()
+    st.subheader("📊 MCQ Question Bank Analysis")
+    
+    # Key metrics in a row
+    total_questions = len(data)
+    total_topics = data['Topic'].nunique()
+    total_domains = data['Domain'].nunique()
+    total_categories = data['Category'].nunique()
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">{}</div>
+            <div class="metric-label">Total Questions</div>
+        </div>
+        """.format(total_questions), unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">{}</div>
+            <div class="metric-label">Topics</div>
+        </div>
+        """.format(total_topics), unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">{}</div>
+            <div class="metric-label">Domains</div>
+        </div>
+        """.format(total_domains), unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-value">{}</div>
+            <div class="metric-label">Categories</div>
+        </div>
+        """.format(total_categories), unsafe_allow_html=True)
+    
+    # Topic and difficulty distribution
+    st.subheader("Topic & Difficulty Distribution")
+    
+    # Create pivot table for topics and difficulties
+    topic_diff_pivot = pd.pivot_table(
+        data, 
+        index='Topic', 
+        columns='Difficulty', 
+        aggfunc='size',
+        fill_value=0
     )
+    
+    # Calculate row totals and add the total column
+    topic_diff_pivot['Total'] = topic_diff_pivot.sum(axis=1)
+    
+    # Sort by total
+    topic_diff_pivot = topic_diff_pivot.sort_values('Total', ascending=False)
+    
+    # Remove columns with all zeros
+    topic_diff_pivot = topic_diff_pivot.loc[:, (topic_diff_pivot != 0).any(axis=0)]
+    
+    # Display as table
+    st.dataframe(topic_diff_pivot, use_container_width=True)
+    
+    # Domain-based analysis
+    st.subheader("Domain Analysis")
+    
+    # Create domain statistics
+    domain_stats = data.groupby('Domain').agg(
+        questions=('Question', 'count'), 
+        topics=('Topic', 'nunique'),
+        avg_difficulty=('Difficulty', lambda x: 
+            sum([{'Easy': 1, 'Medium': 2, 'Hard': 3}.get(d.title(), 0) for d in x]) / len(x)
+                     if len(x) > 0 else 0),
+        category=('Category', lambda x: x.mode()[0] if not x.mode().empty else 'Unknown')
+    ).sort_values('questions', ascending=False)
+    
+    # Calculate difficulty distribution by domain
+    domain_diff_pivot = pd.pivot_table(
+        data, 
+        index='Domain', 
+        columns='Difficulty', 
+        aggfunc='size',
+        fill_value=0
+    )
+    
+    # Remove columns with all zeros from domain_diff_pivot before merging
+    domain_diff_pivot = domain_diff_pivot.loc[:, (domain_diff_pivot != 0).any(axis=0)]
+    
+    # Merge the two dataframes
+    domain_analysis = domain_stats.merge(
+        domain_diff_pivot, 
+        left_index=True, 
+        right_index=True, 
+        how='left'
+    ).fillna(0)
+    
+    # Round average difficulty to 2 decimal places
+    domain_analysis['avg_difficulty'] = domain_analysis['avg_difficulty'].round(2)
+    
+    # Display domain analysis
+    st.dataframe(domain_analysis, use_container_width=True)
+    
+    # Visualization section
+    st.subheader("Visualizations")
+    
+    # Create columns for charts
+    viz_col1, viz_col2 = st.columns(2)
+    
+    with viz_col1:
+        # Topic distribution pie chart
+        topic_counts = data['Topic'].value_counts().head(10)
+        fig1 = px.pie(
+            values=topic_counts.values,
+            names=topic_counts.index,
+            title='Top 10 Topics by Question Count',
+            color_discrete_sequence=px.colors.sequential.Blues_r
+        )
+        fig1.update_layout(
+            legend_title="Topics",
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+        )
+        st.plotly_chart(fig1, use_container_width=True)
+    
+    with viz_col2:
+        # Difficulty distribution bar chart
+        diff_counts = data['Difficulty'].value_counts()
+        fig2 = px.bar(
+            x=diff_counts.index,
+            y=diff_counts.values,
+            title='Question Distribution by Difficulty',
+            labels={'x': 'Difficulty Level', 'y': 'Number of Questions'},
+            color=diff_counts.values,
+            color_continuous_scale='Blues'
+        )
+        fig2.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(fig2, use_container_width=True)
+    
+    # Domain to Topic Heatmap
+    st.subheader("Domain to Topic Relationship")
+    
+    # Create a crosstab of Domain and Topic
+    domain_topic_cross = pd.crosstab(data['Domain'], data['Topic'])
+    
+    # Remove empty columns from the domain_topic_cross
+    domain_topic_cross = domain_topic_cross.loc[:, (domain_topic_cross != 0).any(axis=0)]
+    
+    # Create heatmap
+    fig3 = px.imshow(
+        domain_topic_cross, 
+        labels=dict(x="Topic", y="Domain", color="Question Count"),
+        color_continuous_scale='Blues',
+        title='Domain to Topic Distribution Heatmap'
+    )
+    fig3.update_layout(height=500)
+    st.plotly_chart(fig3, use_container_width=True)
+    
+    # Category Classification Table
+    st.subheader("Category Classification")
+    
+    # Create classification table by Category
+    category_classification = data.groupby(['Category']).agg(
+        total=('Question', 'count'),
+        topics=('Topic', 'nunique'),
+        domains=('Domain', 'nunique'),
+        avg_difficulty=('Difficulty', lambda x: 
+            sum([{'Easy': 1, 'Medium': 2, 'Hard': 3}.get(d.title(), 0) for d in x]) / len(x)
+                     if len(x) > 0 else 0)
+    ).sort_values('total', ascending=False)
+    
+    # Round average difficulty
+    category_classification['avg_difficulty'] = category_classification['avg_difficulty'].round(2)
+    
+    # Display category classification
+    st.dataframe(category_classification, use_container_width=True)
+    
+    # Topic Classification Table
+    st.subheader("Topic Classification")
+    
+    # Create classification table
+    classification = data.groupby(['Topic']).agg(
+        total=('Question', 'count'),
+        domain=('Domain', lambda x: x.mode()[0] if not x.mode().empty else 'Unknown'),
+        category=('Category', lambda x: x.mode()[0] if not x.mode().empty else 'Unknown'),
+        medium=('Difficulty', lambda x: sum(1 for i in x if i.lower() == 'medium')),
+        hard=('Difficulty', lambda x: sum(1 for i in x if i.lower() == 'hard'))
+    ).sort_values('total', ascending=False)
+    
+    # Reorder columns
+    classification = classification[['category', 'domain', 'total', 'medium', 'hard']]
+    
+    # Display classification table
+    st.dataframe(classification, use_container_width=True)
 
-    # Replace missing difficulty columns with zeros
-    difficulty_columns = ['Easy', 'Medium', 'Hard']
-    for col in difficulty_columns:
-        if col not in topic_stats.columns:
-            topic_stats[col] = 0
-
-    # Add a 'Total' column for each topic (sum of Easy, Medium, Hard)
-    topic_stats['Total'] = topic_stats.sum(axis=1)
-
-    # Calculate the overall total questions
-    overall_total = topic_stats['Total'].sum()
-
-    # Reorder columns to have Topic, Easy, Medium, Hard, Total
-    topic_stats = topic_stats[['Topic'] + difficulty_columns + ['Total']]
-
-    st.subheader("📊 Topic Statistics")
-    st.dataframe(topic_stats)
-
-    # Display overall total questions at the bottom
-    st.markdown(f"### 🏆 Overall Total Questions: {overall_total}")
-
-if page == "Quiz":
-    topics = data['Topic'].unique()
+elif page == "Questions":
+    # Get unique topics and sort them
+    topics = sorted(data['Topic'].unique())
     selected_topic = st.sidebar.selectbox("📌 Select a Topic", topics)
+    
+    # Filter by topic
     filtered_data = data[data['Topic'] == selected_topic]
-    difficulty_levels = ['All'] + list(filtered_data['Difficulty'].unique())
+    
+    # Get unique difficulties for the selected topic
+    difficulty_levels = ['All'] + sorted(filtered_data['Difficulty'].unique())
     selected_difficulty = st.sidebar.selectbox("🎚️ Select Difficulty", difficulty_levels)
-
+    
+    # Filter by difficulty if not 'All'
     if selected_difficulty != 'All':
         filtered_data = filtered_data[filtered_data['Difficulty'] == selected_difficulty]
-
-    for index, row in filtered_data.iterrows():
-        st.markdown(f"**{row['Question']}**")
+    
+    # Number of questions filter
+    max_questions = len(filtered_data)
+    num_questions = st.sidebar.slider("🔢 Number of Questions", 1, max_questions, min(10, max_questions))
+    
+    # Apply filters
+    if len(filtered_data) > num_questions:
+        filtered_data = filtered_data.sample(num_questions)
+    else:
+        filtered_data = filtered_data.head(num_questions)
+    
+    # Display questions
+    st.subheader(f"Questions: {selected_topic} ({selected_difficulty})")
+    
+    for i, (index, row) in enumerate(filtered_data.iterrows(), 1):
+        # Question container
+        st.markdown(f"### Question {i}")
+        st.markdown(f"{row['Question']}")
+        
+        # Options
         options = row['Options'].split(";")
         for i, option in enumerate(options):
             st.markdown(f"- {option.strip()}")
-
+    
         # Find correct option index
         correct_index = get_correct_option_index(row['Correct Answer'])
-
+        
         # Check if correct_index is valid
         if correct_index >= 0 and correct_index < len(options):
             st.markdown(f"""
-            <div style="
-                margin-top: 20px;
-                padding: 10px;
-                background-color: #d1e7dd;
-                border-radius: 8px;
-                color: black;">
+            <div class="answer-box">
                 ✅ <b>Answer:</b> {options[correct_index].strip()}
             </div>
-            <hr>
             """, unsafe_allow_html=True)
+            
+            # Show explanation if available
+            if 'Explanation' in row and pd.notna(row['Explanation']) and row['Explanation'].strip():
+                st.markdown(f"""
+                <div class="explanation-box">
+                    📝 <b>Explanation:</b> {row['Explanation']}
+                </div>
+                """, unsafe_allow_html=True)
         else:
             st.error("❌ Error: Invalid correct answer index.")
-
-if page == "Topic Stats":
-    topic_stats = data.groupby('Topic').agg(total_questions=('Question', 'count')).reset_index()
-    st.subheader("📊 Topic Statistics")
-    st.write(topic_stats)
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
