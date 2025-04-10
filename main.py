@@ -9,19 +9,21 @@ st.title("📚 MCQ Question Bank")
 
 # Google Sheets authentication
 try:
-    creds = {
-        "type": "service_account",
-        "project_id": "gen-lang-client-0825677129",
-        "private_key_id": "65f8068623bb08e2a09f82daf250edad3daf20fe",
-        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCtYR/SqwX0Amy7\n0VUaHe0x01B20FPgQQvFTXLxgNdTk6g2wIcj997NQ2I3gboV5htkax18NBQZ6KZy\ng7il4e9oQYa7VBaEXyqgDKrrFlpzt+KHGzQLF0jdRbWJuL5U4hBFpoHIr5vC7Oc6\ny6uKRHRqhGuYWV5BBx4EGtWsFRQ5JXuJDiF64wioh170xAAsEgnKIcpjg3kG1c+n\n3BruIsP0p5hbM5azCTpdVHbBL7F/RCYqULgov6LrrYXsAbgXaISYdbs0msUpp2ze\nFlGqOA5ywHgRDOj/vzf2C1UG0aNODi+gfndxkkTV5+//eq/n5+DZk11hxJ8VuOZp\nNcGReau3AgMBAAECggEAFsfTKZgFETmcVdU8bFEQUGKmiOX4j1ecl1EE0EyQfk/B\nY2hKmWRBJxE6f3aRH717TedxGVeyaHEUJam/AjS8gyNQ854p0zy52guwDXGDcv7v\nSbc+UFK/5Sr6nlzizT5iyvQEy3yfZ64+94+5O1KhRTme9YaQhtTLkdiAyLqATL2z\nnIq2gmKjyCz2KviaaGF5OvyEHOrl38UQMxkBjbE1muxJGPa3CXsbH4JxdSeoljc+\nJFc1LRqFzasdamWxIWL02pGWFWyIZw9iwyKmGD5paB44hS3p5XRhEC3deMiPuLHi\nuSO9XHEgsq48Jv7GolQJaEx1xEs+r1k6O1BUA+ccyQKBgQDd5EqdYwKQLWbgSFU8\nHyYiS2mvYBSFqpE33dpgCkbYigBD/SKHXuHnBd535LYScplYv8EIaUlYN8qICYF5\ngdjibM3LX8l4OlQQKQUp3FUQlYDwyI4WXjxDdAI2YIqq1RFEJ5/GQU/XuN0Q/14J\nmLYIFjrjDDGYAhvmXkMqKXkacwKBgQDIB9AANe3I0Lm9X/m1uKv/Yj70h9kPpJn6\nCj70CfquQl+fISgZo5Yb7/xYAIDxQUsXwI7eUxt4oQLMuhDVKVBNfEx/3rqXqDB+\nrCprLJ6JAwuaFwrgNNAHMO+XsDxP/Qcp/gs93NqbYMw8dn8f3q28sENl1Ar8iOX/\nlKrYNaMErQKBgQCXwYjed1bLcKHJhu70fYFBNz6CuT2P5YYIJW0y/hRSCKAB3+B7\noQLzU+pBKWT03PfP4OWOcSO+d/nGbGnmxk2lHjDphQtvdMUFgGiNpqlu/DEBfMjg\nt3aT04Wn1wM/rxVt/YOivgxzR3W6KE0SVyU4BqwjmLVadybJuXJKJa8zzQKBgQDG\npqOWIfik700W2kLGisEdnjdBZ8xUcbaNEDHW8DYpazdFdIs7cy93TU1BJDbp4Vsv\nGoeIGeb1VInQQZTH7QCYAzKB5vNN+7U1h8uUpjpHfWO/QtUFNs3F5n57GYW8NmAv\n/uCxLi1YE7ig71lukBnggvhcH0pN47LusHk+wX3E/QKBgHQP6jf1iALdJm7fEnPu\nY6BdUP8Sl0Ps/1QN5/9ZyqczCsVLd5G6XXEgDhUESTHsYMIMNfEEfjuaNtKd8d1Q\nVA9ot2yW/IqKGDpdBRWEHmFFJI2c4X812RTFbibS6FjvgLY+CR2ee7uh0WKEGcyf\ntiYUBwODxZRuycZYl3eOICdP\n-----END PRIVATE KEY-----\n",
-        "client_email": "data-774@gen-lang-client-0825677129.iam.gserviceaccount.com",
-        "client_id": "101552404875723380663",
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/data-774%40gen-lang-client-0825677129.iam.gserviceaccount.com",
-        "universe_domain": "googleapis.com"
-    }
+    creds ={
+  "type": "service_account",
+  "project_id": "gen-lang-client-0825677129",
+  "private_key_id": "6b650cb37df5576f8cb5c1f8f528c3211e3b6bf2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDDWosoEheFQ1Mq\nS7BLwR9SZI5AMh7RzbjNUURI/xtzWO+CkPCpV146GjXfAIm3FBqbeyCIwCvVET6q\nts8TxhPrp9jBQGtepJt1sAwmlD1tqnvwT6bOvvPt9Zmc1/y9MhSSId6h+GaP14Bw\n4Uu8ilOqWw5KolsUd9+wExSxRunGwoR9lcsnEzdC3KOpIrxVXImZkq63fcvXN15u\nj92ihjP8jH4tU45csEPVMjruPkgnYnq6le2CVDKh+rtV3MMHqg5hedS/1T4U8OiN\n6daTmk95SUC3xmYgOzEsG+gk/HvpS84H1Mm4F+ZSDcY82adX0kPDupvyFCu8VzNy\nTXQwR5hvAgMBAAECggEAQUW8EE/3Nuo3W/79MVqeRg/eLdnxTUWxFT0tlTxT5jcV\nk+ks2FAeZkiCrnfGC/t2JnQ9+yNGogMIjs7VIvTAjDFBbdTB61YRsYF4ld1bJwzb\nK4DZqePIqj4xLORICMk2cVtKwZC3aCFnw4+rmBwZ92ZEQLC9wPmKrpC5jcA1dVjM\nlUpEYku1P0VCs50E9gqm3AnZGiFZn2gQffSOQ5DAA5cr+MHAlcjYLV/7rti11frV\nYOGc0QTvjpVJYz/tdY9MF7XrS0P2nyroU+ifuW1l/ojWVkjvojusazyBZyThGQXL\nyFGFIGsWVCjtZGdqRfYF4JCUheiLU+t35QXT++JjKQKBgQDnwf7c53+OKE1DWTXI\n10zX/sKKrWgfTDLM82y+aVY2AJv4ddKwC4BVr/mkBFpiO1Fzm6+XJq4UbysJ03ji\njA1vfvtvJAdpI54/1PB9U956ZDTH+aV90nSMf5FPQEqjFKkg3BUukDgm/jfAJJBP\nflA6kzRIQxrSyBfQJolcrr+iVwKBgQDXybg93LfR3rPyCjdnQRwdzphct4BNmUpI\nKuWIN6NlsgQoBv4aO3LuTPfPV2fEwkUSOva1Qb0zW9GX72pH8Ocl3fOja/ZOiZh7\njSPKZ2e2PiJhIDMiZ7/X4ALb9L+vpRuM3KgMuKIcREdENdHd23T0q84XDJNsjd+V\na6ZuniPbqQKBgFSJ3U/zWgIfDV/90LK8Zpl7orc3Xf3cq8M7IHWssvfr7PkK8Zmp\n+FxJXsTHmbivbpy/M6PtRh7KFmb1LulksRn0tf7qo5FknrsmD7uHtmXq253+oLFu\n7Xi6p+TCzPcD+FW2MjvT+8etf+Sk8cctilJzk+SwJb6xoo4ZII4gaGLtAoGBAJLj\n2esiiG7wroWgtr4u8DjKHaVftJMeOhaOPNlRJoVffLzSpb6toTreYgJeeWDS7bnP\nMYmJSoXfhvlqHGsEbhS01dj08SHdQFM6bJandU31VenPxX8yKMGG1+tq2+Fw/yQQ\nQMUIGjIruGeSS14+uYqkORIvmVtX6E8KjKzYMYihAoGBAJuD4B/Xa+KBftwAtzTt\n/yknB04zJqsxzkIgR4M9beVZQYV6WWEl52kv+eI6xgO0LiV41CAGhwQXg0wf/48F\nu70MiG40Lg9NVUQWQnxEdHw7VINu4jdEDbBaN+0fV4CNIZjc1ALWI/jUMMu4mExl\nTggZc56ircRw+JTT++KgNCg+\n-----END PRIVATE KEY-----\n",
+  "client_email": "data-774@gen-lang-client-0825677129.iam.gserviceaccount.com",
+  "client_id": "101552404875723380663",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/data-774%40gen-lang-client-0825677129.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
+
+
     client = gspread.service_account_from_dict(creds)
     spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1K2HJSL0U0vay4UaW4s3QPAIkQ_noj742ZRQJxbTTbQ0")
     worksheet = spreadsheet.get_worksheet(0)
@@ -42,22 +44,16 @@ if page == "Topic Stats":
     total = len(raw_records)
     st.markdown(f"### ✅ Total Questions: {total}")
 
-    # Count topics and difficulties
+    # Count topics
     topic_count = {}
     difficulty_count = {}
 
     for row in raw_records:
         topic = row.get("Topic", "Unknown").strip().title()
         diff = row.get("Difficulty", "Unknown").strip().title()
+
         topic_count[topic] = topic_count.get(topic, 0) + 1
         difficulty_count[diff] = difficulty_count.get(diff, 0) + 1
-
-    # Number of unique topics
-    st.markdown(f"### 📌 Total Topics: {len(topic_count)}")
-
-    # Topic-wise count table
-    topic_table = [{"Topic": k, "Questions": v} for k, v in sorted(topic_count.items(), key=lambda x: x[1], reverse=True)]
-    st.table(topic_table)
 
     # Pie chart - top topics
     top_topics = dict(sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:10])
